@@ -356,49 +356,73 @@ function group(array, keySelector, valueSelector) {
  *
  *  For more examples see unit tests.
  */
-
-const cssSelectorBuilder = {
-  selector: '',
+class CssSelectorBuilder {
+  constructor() {
+    this.selector = '';
+    this.order = [];
+  }
 
   element(value) {
-    this.selector = (this.selector || '') + value;
+    this.checkOrder(1);
+    this.selector += value;
+    this.order.push('element');
     return this;
-  },
+  }
 
   id(value) {
-    this.selector = (this.selector || '') + `#${value}`;
+    this.checkOrder(2);
+    this.selector += `#${value}`;
+    this.order.push('id');
     return this;
-  },
+  }
 
   class(value) {
-    this.selector = (this.selector || '') + `.${value}`;
+    this.checkOrder(3);
+    this.selector += `.${value}`;
+    this.order.push('class');
     return this;
-  },
+  }
 
   attr(value) {
-    this.selector = (this.selector || '') + `[${value}]`;
+    this.checkOrder(4);
+    this.selector += `[${value}]`;
+    this.order.push('attr');
     return this;
-  },
+  }
 
   pseudoClass(value) {
-    this.selector = (this.selector || '') + `:${value}`;
+    this.checkOrder(5);
+    this.selector += `:${value}`;
+    this.order.push('pseudoClass');
     return this;
-  },
+  }
 
   pseudoElement(value) {
-    this.selector = (this.selector || '') + `::${value}`;
+    this.checkOrder(6);
+    this.selector += `::${value}`;
+    this.order.push('pseudoElement');
     return this;
-  },
+  }
 
   combine(selector1, combinator, selector2) {
     this.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
     return this;
-  },
+  }
 
   stringify() {
     return this.selector;
-  },
-};
+  }
+
+  checkOrder(position) {
+    if (this.order.length >= position) {
+      throw new Error(
+        'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+      );
+    }
+  }
+}
+
+const cssSelectorBuilder = new CssSelectorBuilder();
 
 module.exports = {
   shallowCopy,
